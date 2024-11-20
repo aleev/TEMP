@@ -1,0 +1,31 @@
+struct rk_i2s_dev *i2s = to_info(dai);
+unsigned int val = 0;
+unsigned int mclk_rate, bclk_rate, div_bclk, div_lrck;
+
+if (i2s->is_master_mode) {
+    mclk_rate = clk_get_rate(i2s->mclk);
+    dev_dbg(i2s->dev, "MCLK Rate: %u\n", mclk_rate);  // Логируем частоту MCLK
+
+    bclk_rate = i2s->bclk_ratio * params_rate(params);
+    if (!bclk_rate) {
+        dev_err(i2s->dev, "BCLK rate is zero, invalid parameters\n");
+        return -EINVAL;
+    }
+    dev_dbg(i2s->dev, "BCLK Rate: %u\n", bclk_rate);  // Логируем частоту BCLK
+
+    div_bclk = DIV_ROUND_CLOSEST(mclk_rate, bclk_rate);
+    dev_dbg(i2s->dev, "Div BCLK: %u\n", div_bclk);  // Логируем делитель BCLK
+
+    div_lrck = bclk_rate / params_rate(params);
+    dev_dbg(i2s->dev, "Div LRCK: %u\n", div_lrck);  // Логируем делитель LRCK
+
+    regmap_update_bits(i2s->regmap, I2S_CKR,
+            I2S_CKR_MDIV_MASK,
+            I2S_CKR_MDIV(div_bclk));
+    
+    regmap_update_bits(i2s->regmap, I2S_CKR,
+            I2S_CKR_TSD_MASK |
+            I2S_CKR_RSD_MASK,
+            I2S_CKR_TSD(div_lrck) |
+            I2S_CKR_RSD(div_lrck));
+}
