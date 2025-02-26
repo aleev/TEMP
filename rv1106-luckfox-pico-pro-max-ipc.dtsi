@@ -18,15 +18,15 @@
         osc_49m: osc-49m {
                 compatible = "fixed-clock";
                 #clock-cells = <0>;
-                clock-frequency = <49152000>;
-//		clock-frequency = <24576000>;
+//                clock-frequency = <49152000>;
+		clock-frequency = <24576000>;
         };
 
         osc_45m: osc-45m {
                 compatible = "fixed-clock";
                 #clock-cells = <0>;
-                clock-frequency = <45158400>;
-//		clock-frequency = <22579200>;
+//                clock-frequency = <45158400>;
+		clock-frequency = <22579200>;
         };
         i2s0_mclkin: i2s0_mclkin {
                 compatible = "gpio-mux-clock";
